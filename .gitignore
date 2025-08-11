@@ -1,0 +1,60 @@
+# Node
+/frontend/node_modules
+/frontend/build
+/frontend/.env.local
+/frontend/.env*.local
+/frontend/.DS_Store
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+
+# Java
+/backend/target/
+/backend/build/
+/backend/pom.xml.tag
+/backend/pom.xml.releaseBackup
+/backend/pom.xml.versionsBackup
+/backend/pom.xml.next
+/backend/release.properties
+/backend/temp
+/backend/bin/
+/backend/binaries/
+/backend/.project
+/backend/.classpath
+/backend/.settings/
+/backend/.loadpath
+/backend/bin/
+/backend/!.classpath
+/backend/!.project
+/backend/!.settings
+/backend/!.factorypath
+/backend/.apt_generated
+/backend/.springBeans
+/backend/.metadata
+/backend/.gradle
+/backend/build/
+/backend/**/bin/
+/backend/**/.classpath
+/backend/**/.project
+/backend/**/.settings
+/backend/**/.apt_generated
+/backend/**/.springBeans
+/backend/**/.metadata
+/backend/**/.gradle
+/backend/**/build/
+/backend/out/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Logs
+*.log
+logs/
+
+# Misc
+.DS_Store
+Thumbs.db
