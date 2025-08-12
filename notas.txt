@@ -1,0 +1,41 @@
+1. 
+/// CRIAR TOKEN PARA AUTENTICAÇÃO DE CADASTRO 
+/// CRIAR A ENTIDADE PESSOA
+/// CRIAR A ENTIDADE PERFIL
+/// CRIAR ENTIDADE PESSOAPERFIL (ASSOCIATIVA)
+/// USAR PHPADMIN PARA BANCO DE DADOS 
+/// CRIAR ENTIDADE IMAGEM
+/// CRIAR ENTIDADE FEEDBACK
+/// CRIAR ENTIDADE PAGAMENTO
+/// Enums: StatusLeilao, TipoPerfil
+
+
+
+
+2.
+Endpoints REST (por entidade):
+
+Criar, buscar por ID, listar todos, atualizar, deletar, buscas específicas (conforme necessidade) 
+Ex: GET /leiloes, POST /categorias, PUT /pessoas/{id}, DELETE /lances/{id} etc.
+
+3.
+Validações obrigatórias:
+"
+Use validation para validar atributos:
+@NotBlank, @Email, @Size, @Min, @PastOrPresent, @Positive, etc.
+
+4.
+Recuperação e Alteração de Senha:
+
+Endpoint para solicitar recuperação de senha (gerar e enviar código de verificação por e-mail ou adotar outra possibilidade de recuperação)
+Endpoint para alterar senha com base no código de verificação ou outro meio
+Endpoint para usuário autenticado alterar sua senha
+
+5.
+Envio de E-mails
+Enviar emails com template:
+
+Código de verificação para recuperação de senha
+Confirmação de cadastro
+
+
