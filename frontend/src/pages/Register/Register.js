@@ -1,44 +1,49 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import authenticationService from '../../services/AuthenticationService';
+import InputField from '../../components/InputField/InputField';
+import Button from '../../components/Button/Button';
+import PasswordInput from '../../components/PasswordInput/PasswordInput';
 import PasswordValidator from '../../utils/PasswordValidator';
+import authenticationService from '../../service/AuthenticationService';
 import './Register.css';
 
-const Register = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    nome: '',
-    email: '',
-    senha: '',
-    confirmarSenha: '',
-  });
+const Register = ({ onNavigate }) => {
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [showPasswordValidation, setShowPasswordValidation] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const handleSenhaChange = (value) => {
+    setSenha(value);
+    const validation = PasswordValidator.validate(value);
+    setIsPasswordValid(validation.isValid);
+    setPasswordError(validation.message);
+  };
 
-    if (name === 'senha') {
-      const validation = PasswordValidator.validate(value);
-      setIsPasswordValid(validation.isValid);
-      setPasswordError(validation.message);
-    }
+  const handleFocus = () => {
+    setShowPasswordValidation(true);
+  };
+
+  const handleBlur = () => {
+    setShowPasswordValidation(false);
   };
 
   const isValidForm = () => {
-    if (!formData.nome || !formData.email || !formData.senha || !formData.confirmarSenha) {
-      alert('Por favor, preencha todos os campos.');
+    if (!nome || !email || !senha || !confirmarSenha) {
+      setError('Por favor, preencha todos os campos.');
       return false;
     }
 
-    if (formData.senha !== formData.confirmarSenha) {
-      setPasswordError('As senhas não coincidem.');
+    if (senha !== confirmarSenha) {
+      setError('As senhas n\u00E3o coincidem.');
       return false;
     }
 
     if (!isPasswordValid) {
-      setPasswordError(PasswordValidator.validate(formData.senha).message);
+      setError(PasswordValidator.validate(senha).message);
       return false;
     }
 
@@ -47,75 +52,63 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setError('');
 
     if (isValidForm()) {
       try {
-        const response = await autenticationService.register({
-          nome: formData.nome,
-          email: formData.email,
-          senha: formData.senha,
+        await authenticationService.register({
+          nome,
+          email,
+          senha,
         });
-        console.log("Cadastro realizado com sucesso!", response);
-        navigate('/login');
-      } catch (error) {
-        console.error("Erro no cadastro:", error);
-        // Você pode adicionar um estado para exibir uma mensagem de erro na tela
+        console.log("Cadastro realizado com sucesso!");
+        onNavigate('login');
+      } catch (err) {
+        setError(err.message || 'Erro no cadastro. Tente novamente.');
+        console.error("Erro no cadastro:", err);
       }
     }
   };
 
   return (
-    <div className="container-register">
-      <div className="register-card">
-        <h1>Cadastro</h1>
-        <form onSubmit={handleRegister}>
-          <div className="input-group">
-            <label htmlFor="nome">Nome</label>
-            <input
-              type="text"
-              id="nome"
-              name="nome"
-              value={formData.nome}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="senha">Senha</label>
-            <input
-              type="password"
-              id="senha"
-              name="senha"
-              value={formData.senha}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="confirmarSenha">Confirmar Senha</label>
-            <input
-              type="password"
-              id="confirmarSenha"
-              name="confirmarSenha"
-              value={formData.confirmarSenha}
-              onChange={handleInputChange}
-            />
-          </div>
-          {passwordError && <p className="error-message">{passwordError}</p>}
-          <button type="submit" className="button-register">Cadastrar-se</button>
-          <Link to="/login">
-            <button type="button" className="button-cancel">Cancelar</button>
-          </Link>
-        </form>
-      </div>
+    <div className="auth-card">
+      <h2 className="auth-title">Cadastro</h2>
+      <form onSubmit={handleRegister}>
+        <InputField
+          label="Nome"
+          type="text"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          placeholder="Digite seu nome"
+        />
+        <InputField
+          label="E-mail"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Digite seu e-mail"
+        />
+        <PasswordInput
+          value={senha}
+          onChange={handleSenhaChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          placeholder="Digite sua senha"
+          validatePassword={true}
+        />
+        <PasswordInput
+          label="Confirmar Senha"
+          value={confirmarSenha}
+          onChange={(value) => setConfirmarSenha(value)}
+          placeholder="Confirme sua senha"
+        />
+        {error && <p className="error-message">{error}</p>}
+
+        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+          <Button type="button" className="btn-secondary" onClick={() => onNavigate('login')}>Cancelar</Button>
+          <Button type="submit">Cadastrar-se</Button>
+        </div>
+      </form>
     </div>
   );
 };

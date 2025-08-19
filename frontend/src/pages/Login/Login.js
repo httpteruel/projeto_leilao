@@ -2,15 +2,25 @@ import React, { useState } from 'react';
 import InputField from '../../components/InputField/InputField';
 import Button from '../../components/Button/Button';
 import PasswordInput from '../../components/PasswordInput/PasswordInput';
+import authenticationService from '../../service/AuthenticationService';
 import './Login.css';
 
 const Login = ({ onNavigate }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    alert(`Login realizado com: ${email}`);
+    setError('');
+    try {
+      await authenticationService.login({ email, senha: password });
+      console.log("Login bem-sucedido!");
+      onNavigate('home');
+    } catch (err) {
+      setError(err.message || 'Credenciais inv\u00E1lidas ou erro no servidor.');
+      console.error('Erro no login:', err);
+    }
   };
 
   return (
@@ -27,9 +37,10 @@ const Login = ({ onNavigate }) => {
         />
         <PasswordInput
           value={password}
-          onChange={setPassword}
+          onChange={(value) => setPassword(value)}
           placeholder="Digite sua senha"
         />
+        {error && <p className="error-message">{error}</p>}
         <Button type="submit">Acessar</Button>
       </form>
       <div className="auth-links">

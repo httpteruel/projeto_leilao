@@ -2,23 +2,44 @@ import React, { useState } from 'react';
 import InputField from '../../components/InputField/InputField';
 import Button from '../../components/Button/Button';
 import PasswordInput from '../../components/PasswordInput/PasswordInput';
+import authenticationService from '../../service/AuthenticationService';
 import './ResetPassword.css';
 
 const ResetPassword = ({ onNavigate }) => {
   const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [codigo, setCodigo] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [confirmarNovaSenha, setConfirmarNovaSenha] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
-  const handleReset = (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
-    alert(`Senha alterada para: ${email}`);
-    onNavigate('login');
+    setMessage('');
+    setError('');
+    if (novaSenha !== confirmarNovaSenha) {
+      setError("As senhas n\u00E3o coincidem.");
+      return;
+    }
+
+    try {
+      const resposta = await authenticationService.resetPassword({
+        email,
+        codigo,
+        novaSenha,
+      });
+      setMessage(resposta.message);
+      // Redireciona para o login ap\u00F3s um breve tempo
+      setTimeout(() => onNavigate('login'), 3000);
+    } catch (err) {
+      setError(err.message || "Ocorreu um erro ao redefinir a senha.");
+      console.error("Erro na redefini\u00E7\u00E3o de senha:", err);
+    }
   };
 
   return (
     <div className="auth-card">
-      <h2 className="auth-title">Alterar Senha</h2>
+      <h2 className="auth-title">Redefinir Senha</h2>
       <form onSubmit={handleReset}>
         <InputField
           label="E-mail"
@@ -29,31 +50,28 @@ const ResetPassword = ({ onNavigate }) => {
           required
         />
         <InputField
-          label="Código"
+          label="C\u00F3digo de Recupera\u00E7\u00E3o"
           type="text"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          placeholder="Digite o código recebido"
+          value={codigo}
+          onChange={(e) => setCodigo(e.target.value)}
+          placeholder="Digite o c\u00F3digo"
           required
         />
         <PasswordInput
-          value={newPassword}
-          onChange={setNewPassword}
-          validatePassword={true}
-          placeholder="Digite sua nova senha"
+          label="Nova Senha"
+          value={novaSenha}
+          onChange={setNovaSenha}
+          placeholder="Digite a nova senha"
         />
-        <InputField
+        <PasswordInput
           label="Confirmar Nova Senha"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Confirme sua nova senha"
-          required
+          value={confirmarNovaSenha}
+          onChange={setConfirmarNovaSenha}
+          placeholder="Confirme a nova senha"
         />
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <Button type="button" className="btn-secondary" onClick={() => onNavigate('login')}>Cancelar</Button>
-          <Button type="submit">Alterar Senha</Button>
-        </div>
+        {message && <p className="success-message">{message}</p>}
+        {error && <p className="error-message">{error}</p>}
+        <Button type="submit">Redefinir Senha</Button>
       </form>
     </div>
   );
